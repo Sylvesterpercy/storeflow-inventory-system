@@ -1,117 +1,97 @@
-<!DOCTYPE html>
-<html>
+{% extends 'inventory/base.html' %}
 
-<head>
-    <title>StoreFlow - Inventory</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-</head>
+{% block title %}StoreFlow - Inventory{% endblock %}
 
-<body class="bg-light">
+{% block content %}
 
-<nav class="navbar navbar-dark bg-success px-4">
-    <span class="navbar-brand fw-bold">StoreFlow</span>
-    <div>
-        <a href="/" class="text-white me-3 text-decoration-none">Home</a>
-        <a href="/add/" class="text-white me-3 text-decoration-none">Add Item</a>
-        <a href="/dashboard/" class="text-white me-3 text-decoration-none">Dashboard</a>
-        <a href="/history/" class="text-white me-3 text-decoration-none">Stock History</a>
-        <a href="/logout/" class="text-white text-decoration-none">Logout</a>
-    </div>
-    <span class="text-white">Welcome, {{ request.user.username }}</span>
-</nav>
+<h4 class="mb-3">Inventory Items</h4>
 
-<div class="container mt-4">
-
-    <h4 class="mb-3">Inventory Items</h4>
-
-    {% if messages %}
-        {% for message in messages %}
-            {% if message.tags == 'error' %}
-                <div class="alert alert-danger">{{ message }}</div>
-            {% else %}
-                <div class="alert alert-success">{{ message }}</div>
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-
-    <form method="GET" action="/">
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <input type="text" name="search" class="form-control" placeholder="Search by name or supplier" value="{{ request.GET.search }}">
-            </div>
-            <div class="col-md-3">
-                <select name="sort" class="form-select">
-                    <option value="">Sort By</option>
-                    <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Name</option>
-                    <option value="price" {% if request.GET.sort == 'price' %}selected{% endif %}>Price</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-success">Go</button>
-            </div>
+<form method="GET" action="/">
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <input type="text" name="search" class="form-control" placeholder="Search by name or supplier" value="{{ request.GET.search }}">
         </div>
-    </form>
-
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <span class="text-muted">Total Items: {{ total }}</span>
-        <a href="/export/" class="btn btn-primary btn-sm">Export to CSV</a>
+        <div class="col-md-2">
+            <select name="category" class="form-select">
+                <option value="">All Categories</option>
+                <option value="Electronics" {% if request.GET.category == 'Electronics' %}selected{% endif %}>Electronics</option>
+                <option value="Furniture" {% if request.GET.category == 'Furniture' %}selected{% endif %}>Furniture</option>
+                <option value="Stationery" {% if request.GET.category == 'Stationery' %}selected{% endif %}>Stationery</option>
+                <option value="Clothing" {% if request.GET.category == 'Clothing' %}selected{% endif %}>Clothing</option>
+                <option value="Other" {% if request.GET.category == 'Other' %}selected{% endif %}>Other</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="sort" class="form-select">
+                <option value="">Sort By</option>
+                <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Name</option>
+                <option value="price" {% if request.GET.sort == 'price' %}selected{% endif %}>Price</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-success">Go</button>
+            <a href="/" class="btn btn-outline-secondary">Clear</a>
+        </div>
     </div>
+</form>
 
-    <table class="table table-bordered table-hover bg-white">
-        <thead class="table-success">
-            <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total Price</th>
-                <th>Supplier</th>
-                <th>Created Date</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in items %}
-            <tr {% if item.quantity < 5 %}class="table-danger"{% endif %}>
-                <td>{{ item.item_name }}</td>
-                <td>{{ item.category }}</td>
-                <td>
-                    {{ item.quantity }}
-                    {% if item.quantity < 5 %}
-                        <span class="badge bg-danger ms-1">Low Stock</span>
-                    {% endif %}
-                </td>
-                <td>₹{{ item.price }}</td>
-                <td>₹{{ item.total_price }}</td>
-                <td>{{ item.supplier }}</td>
-                <td>{{ item.created_date }}</td>
-                <td>
-                    <a href="/update/{{ item.id }}/" class="btn btn-sm btn-primary">Edit</a>
-                    <a href="/delete/{{ item.id }}/" class="btn btn-sm btn-danger">Delete</a>
-                    <a href="/stock/{{ item.id }}/" class="btn btn-sm btn-success">Stock</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <div class="mt-3">
-        {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-success btn-sm">Previous</a>
-        {% else %}
-            <button class="btn btn-outline-secondary btn-sm" disabled>Previous</button>
-        {% endif %}
-
-        <span class="mx-2">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-
-        {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-success btn-sm">Next</a>
-        {% else %}
-            <button class="btn btn-outline-secondary btn-sm" disabled>Next</button>
-        {% endif %}
-    </div>
-
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <span class="text-muted">Total Items: {{ total }}</span>
+    <a href="/export/" class="btn btn-primary btn-sm">Export to CSV</a>
 </div>
 
-</body>
-</html>
+<table class="table table-bordered table-hover bg-white">
+    <thead class="table-success">
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Total Price</th>
+            <th>Supplier</th>
+            <th>Created Date</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr {% if item.quantity < 5 %}class="table-danger"{% endif %}>
+            <td><a href="/detail/{{ item.id }}/" class="text-decoration-none">{{ item.item_name }}</a></td>
+            <td>{{ item.category }}</td>
+            <td>
+                {{ item.quantity }}
+                {% if item.quantity < 5 %}
+                    <span class="badge bg-danger ms-1">Low Stock</span>
+                {% endif %}
+            </td>
+            <td>₹{{ item.price }}</td>
+            <td>₹{{ item.total_price }}</td>
+            <td>{{ item.supplier }}</td>
+            <td>{{ item.created_date }}</td>
+            <td>
+                <a href="/update/{{ item.id }}/" class="btn btn-sm btn-primary">Edit</a>
+                <a href="/delete/{{ item.id }}/" class="btn btn-sm btn-danger">Delete</a>
+                <a href="/stock/{{ item.id }}/" class="btn btn-sm btn-success">Stock</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="mt-3">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-success btn-sm">Previous</a>
+    {% else %}
+        <button class="btn btn-outline-secondary btn-sm" disabled>Previous</button>
+    {% endif %}
+
+    <span class="mx-2">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-success btn-sm">Next</a>
+    {% else %}
+        <button class="btn btn-outline-secondary btn-sm" disabled>Next</button>
+    {% endif %}
+</div>
+
+{% endblock %}

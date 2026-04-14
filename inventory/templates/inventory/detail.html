@@ -1,0 +1,90 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}StoreFlow - Item Detail{% endblock %}
+
+{% block content %}
+
+<h4 class="mb-3">Item Detail</h4>
+
+<div class="card shadow-sm mb-4" style="max-width: 500px;">
+    <div class="card-body">
+        <table class="table table-borderless mb-0">
+            <tr>
+                <td class="text-muted">Item Name</td>
+                <td><strong>{{ item.item_name }}</strong></td>
+            </tr>
+            <tr>
+                <td class="text-muted">Category</td>
+                <td>{{ item.category }}</td>
+            </tr>
+            <tr>
+                <td class="text-muted">Quantity</td>
+                <td>
+                    {{ item.quantity }}
+                    {% if item.quantity < 5 %}
+                        <span class="badge bg-danger ms-1">Low Stock</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-muted">Unit Price</td>
+                <td>₹{{ item.price }}</td>
+            </tr>
+            <tr>
+                <td class="text-muted">Total Price</td>
+                <td>₹{{ item.total_price }}</td>
+            </tr>
+            <tr>
+                <td class="text-muted">Supplier</td>
+                <td>{{ item.supplier }}</td>
+            </tr>
+            <tr>
+                <td class="text-muted">Created Date</td>
+                <td>{{ item.created_date }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="mb-4">
+    <a href="/update/{{ item.id }}/" class="btn btn-primary btn-sm">Edit</a>
+    <a href="/stock/{{ item.id }}/" class="btn btn-success btn-sm ms-2">Stock Movement</a>
+    <a href="/delete/{{ item.id }}/" class="btn btn-danger btn-sm ms-2">Delete</a>
+</div>
+
+<h5 class="mb-3">Stock Movement History</h5>
+
+<table class="table table-bordered table-hover bg-white">
+    <thead class="table-success">
+        <tr>
+            <th>Type</th>
+            <th>Quantity</th>
+            <th>Reason</th>
+            <th>Done By</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in history %}
+        <tr>
+            <td>
+                {% if record.movement_type == 'IN' %}
+                    <span class="badge bg-success">Stock In</span>
+                {% else %}
+                    <span class="badge bg-danger">Stock Out</span>
+                {% endif %}
+            </td>
+            <td>{{ record.quantity }}</td>
+            <td>{{ record.reason }}</td>
+            <td>{{ record.done_by }}</td>
+            <td>{{ record.date|date:"d M Y, h:i A" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center text-muted">No stock movements for this item.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
