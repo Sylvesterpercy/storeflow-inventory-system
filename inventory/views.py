@@ -29,18 +29,20 @@ def signup_view(request):
 
 
 def login_view(request):
+    form = LoginForm(request.POST or None)
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        if not username or not password:
-            return render(request, 'inventory/login.html', {'error': 'Both fields are required.'})
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('inventory_list')
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('inventory_list')
+            else:
+                return render(request, 'inventory/login.html', {'form': form, 'error': 'Invalid username or password.'})
         else:
-            return render(request, 'inventory/login.html', {'error': 'Invalid username or password.'})
-    return render(request, 'inventory/login.html')
+            return render(request, 'inventory/login.html', {'form': form, 'error': 'Both fields are required.'})
+    return render(request, 'inventory/login.html', {'form': form})
 
 
 def logout_view(request):
@@ -96,11 +98,26 @@ def inventory_add(request):
     if request.method == 'POST':
         if form.is_valid():
             name = form.cleaned_data['item_name']
-            # duplicate check
+
+
             if Inventory.objects.filter(item_name=name).exists():
                 messages.error(request, 'Item with this name already exists.')
                 return render(request, 'inventory/add.html', {'form': form})
-            form.save()
+
+
+            category = form.cleaned_data['category']
+            if category == 'Other':
+                other_category = request.POST.get('other_category')
+                if other_category:
+                    category = other_category
+                else:
+                    messages.error(request, 'Please specify the category name.')
+                    return render(request, 'inventory/add.html', {'form': form})
+
+            item = form.save(commit=False)
+            item.category = category
+            item.save()
+
             messages.success(request, 'Item added successfully.')
             return redirect('inventory_list')
         else:
