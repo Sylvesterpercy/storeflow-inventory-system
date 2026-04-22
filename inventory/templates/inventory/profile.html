@@ -1,0 +1,46 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}StoreFlow - Profile{% endblock %}
+
+{% block content %}
+
+<h4 class="mb-3">My Profile</h4>
+
+<div class="card shadow-sm" style="max-width: 500px;">
+    <div class="card-body">
+
+        <div class="mb-3">
+            <label class="form-label text-muted">Username</label>
+            <input type="text" class="form-control" value="{{ request.user.username }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-muted">Organization</label>
+            <input type="text" class="form-control" value="{{ org.name }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-muted">Role</label>
+            <input type="text" class="form-control" value="{% if request.user.is_staff %}Admin{% else %}Staff{% endif %}" disabled>
+        </div>
+
+        <hr>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-control" value="{{ request.user.email }}">
+                <small class="text-muted">Low stock alerts will be sent to this email</small>
+            </div>
+
+            <button type="submit" class="btn btn-success">Update Email</button>
+            <a href="/change-password/" class="btn btn-outline-secondary ms-2">Change Password</a>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

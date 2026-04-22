@@ -1,0 +1,111 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}StoreFlow - User Profile{% endblock %}
+
+{% block content %}
+
+<h4 class="mb-4">User Profile</h4>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h6 class="mb-0">Profile Information</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">Email Address</label>
+                        {{ form.email }}
+                        <div class="form-text">
+                            <i class="fas fa-info-circle text-info me-1"></i>
+                            Required for receiving low stock notifications and other system alerts.
+                        </div>
+                        {% if form.email.errors %}
+                            <div class="text-danger small">
+                                {{ form.email.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" value="{{ request.user.username }}" readonly>
+                        <div class="form-text">Username cannot be changed.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <input type="text" class="form-control" value="{% if request.user.is_staff %}Administrator{% else %}Staff{% endif %}" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Organization</label>
+                        <input type="text" class="form-control" value="{{ user_profile.organization.name|default:'Not Assigned' }}" readonly>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Update Profile
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h6 class="mb-0">Email Notifications</h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-envelope text-info me-2"></i>
+                    <strong>Low Stock Alerts:</strong> Administrators receive email notifications when inventory items run low.
+                </div>
+
+                {% if request.user.is_staff %}
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    As an administrator, you will receive low stock notifications at the email address above.
+                </div>
+                {% else %}
+                <div class="alert alert-secondary">
+                    <i class="fas fa-info-circle text-secondary me-2"></i>
+                    Staff members do not receive automated email notifications.
+                </div>
+                {% endif %}
+
+                <hr>
+
+                <div class="mb-3">
+                    <h6>Notification Settings:</h6>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" checked disabled>
+                        <label class="form-check-label">
+                            Low stock alerts (when items fall below threshold)
+                        </label>
+                    </div>
+                    <div class="form-text">
+                        More notification preferences coming soon.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-light">
+                <h6 class="mb-0">Change Password</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">Need to change your password?</p>
+                <a href="/change-password/" class="btn btn-outline-primary">
+                    <i class="fas fa-key me-1"></i>Change Password
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

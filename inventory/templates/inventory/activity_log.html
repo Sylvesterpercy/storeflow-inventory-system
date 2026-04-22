@@ -1,0 +1,54 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}StoreFlow - Activity Log{% endblock %}
+
+{% block content %}
+
+<h4 class="mb-3">Activity Log</h4>
+
+<table class="table table-bordered table-hover bg-white">
+    <thead class="table-success">
+        <tr>
+            <th>User</th>
+            <th>Action</th>
+            <th>Description</th>
+            <th>Date & Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for activity in activities %}
+        <tr>
+            <td>{{ activity.user }}</td>
+            <td>
+                {% if activity.action == 'CREATE' %}
+                    <span class="badge bg-success">Created</span>
+                {% elif activity.action == 'UPDATE' %}
+                    <span class="badge bg-primary">Updated</span>
+                {% elif activity.action == 'DELETE' %}
+                    <span class="badge bg-danger">Deleted</span>
+                {% elif activity.action == 'LOGIN' %}
+                    <span class="badge bg-info">Login</span>
+                {% elif activity.action == 'LOGOUT' %}
+                    <span class="badge bg-secondary">Logout</span>
+                {% elif activity.action == 'STOCK_IN' %}
+                    <span class="badge bg-success">Stock In</span>
+                {% elif activity.action == 'STOCK_OUT' %}
+                    <span class="badge bg-warning text-dark">Stock Out</span>
+                {% elif activity.action == 'EXPORT' %}
+                    <span class="badge bg-primary">Export</span>
+                {% elif activity.action == 'IMPORT' %}
+                    <span class="badge bg-primary">Import</span>
+                {% endif %}
+            </td>
+            <td>{{ activity.description }}</td>
+            <td>{{ activity.timestamp|date:"d M Y, h:i A" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" class="text-center text-muted">No activity yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -6,7 +6,7 @@
 
 <h4 class="mb-4">Dashboard</h4>
 
-<div class="row g-3">
+<div class="row g-3 mb-4">
 
     <div class="col-md-3">
         <div class="card text-white bg-primary shadow-sm">
@@ -27,7 +27,7 @@
     </div>
 
     <div class="col-md-3">
-        <div class="card text-white bg-success shadow-sm">
+        <div class="card text-white bg-warning shadow-sm">
             <div class="card-body text-center">
                 <h6 class="card-title">Total Value</h6>
                 <h2>₹{{ total_value }}</h2>
@@ -45,5 +45,63 @@
     </div>
 
 </div>
+
+<div class="row mb-4">
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="mb-3">Items by Category</h6>
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="mb-3">Stock Levels (Top 10)</h6>
+                <canvas id="stockChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // category pie chart
+    var categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ category_labels|safe }},
+            datasets: [{
+                data: {{ category_data|safe }},
+                backgroundColor: ['#4CAF50', '#2196F3', '#FF9800', '#F44336', '#9C27B0']
+            }]
+        }
+    });
+
+    // stock bar chart
+    var stockCtx = document.getElementById('stockChart').getContext('2d');
+    new Chart(stockCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ stock_labels|safe }},
+            datasets: [{
+                label: 'Quantity',
+                data: {{ stock_data|safe }},
+                backgroundColor: '#4CAF50'
+            }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
 
 {% endblock %}

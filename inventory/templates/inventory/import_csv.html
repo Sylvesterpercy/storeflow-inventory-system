@@ -1,0 +1,30 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}StoreFlow - Import CSV{% endblock %}
+
+{% block content %}
+
+<h4 class="mb-3">Import Inventory from CSV</h4>
+
+<div class="card shadow-sm mb-4" style="max-width: 500px;">
+    <div class="card-body">
+
+        <p class="text-muted">Upload a CSV file with the following columns:</p>
+        <p><code>Item Name, Category, Quantity, Unit Price, Supplier</code></p>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Select CSV File</label>
+                <input type="file" name="csv_file" class="form-control" accept=".csv" required>
+            </div>
+
+            <button type="submit" class="btn btn-success">Import</button>
+            <a href="/" class="btn btn-secondary ms-2">Cancel</a>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}
