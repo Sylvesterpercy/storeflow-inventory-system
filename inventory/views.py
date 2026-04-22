@@ -178,7 +178,8 @@ def manage_users(request):
                 from django.core.mail import send_mail
                 from django.conf import settings
                 subject = 'Your StoreFlow Account - ' + org.name
-                message = 'Hello ' + username + ',\n\nYour account has been created on StoreFlow.\n\nUsername: ' + username + '\nTemporary Password: ' + password + '\n\nPlease login and change your password immediately.\n\nLogin here: http://127.0.0.1:8000/staff-login/\n\nRegards,\n' + request.user.username + '\n' + org.name
+                login_url = request.scheme + '://' + request.get_host() + '/staff-login/'
+                message = 'Hello ' + username + ',\n\nYour account has been created on StoreFlow.\n\nUsername: ' + username + '\nTemporary Password: ' + password + '\n\nPlease login and change your password immediately.\n\nLogin here: ' + login_url + '\n\nRegards,\n' + request.user.username + '\n' + org.name
                 send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
                 log_activity(request.user, 'CREATE', 'Created staff user: ' + username + ' and sent credentials to ' + email)
                 messages.success(request, 'Staff user ' + username + ' created. Credentials sent to ' + email)
